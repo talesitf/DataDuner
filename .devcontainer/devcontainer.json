@@ -13,6 +13,6 @@
     "gitlens.gitlens"
   ],
   "forwardPorts": [],
-  "postCreateCommand": "./postCreate.sh",
+  "postCreateCommand": "/home/vscode/postCreate.sh",
   "remoteUser": "vscode"
 }
