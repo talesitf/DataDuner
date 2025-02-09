@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     opam init -y && \
     eval $(opam env) && \
     opam switch create 4.14.0 && \
-    opam install -y dune utop ocaml-lsp-server
+    opam install -y dune utop ocaml-lsp-server earlybird
 
 USER vscode
 
