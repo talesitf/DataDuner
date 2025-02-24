@@ -28,4 +28,5 @@ let rec second_max_element_tail first second list =
 let second_max_element = function
   | [] -> failwith "empty list"
   | [x] -> failwith "list with only one element"
-  | h1 :: (h2 :: t) -> second_max_element_tail h1 h2 t
+  | h1 :: (h2 :: t) -> if h1 > h2 then second_max_element_tail h1 h2 t else second_max_element_tail h2 h1 t
+
