@@ -8,8 +8,8 @@ let rec second_max_element list =
   match list with
   | [] -> failwith "empty list"
   | [_] -> failwith "list with only one element"
-  | [x;y] -> if x > y then y else x
-  | h1 :: h2 :: t ->
+  | h1 :: (h2 :: []) -> if h1 > h2 then h2 else h1
+  | h1 :: (h2 :: t) ->
     let max_tail = max_element t in
     if h1 > max_tail && h2 > max_tail then 
       if h1 > h2 then h2 else h1
