@@ -16,6 +16,7 @@ let parse_float raw_float =
   raw_float |> float_of_string_opt |> Option.to_result ~none:`Invalid_number
 
 let extract_field row field_name parser = Csv.Row.find row field_name |> parser
+
 let extract_float row field_name = extract_field row field_name parse_float
 let extract_int row field_name = extract_field row field_name parse_int
 let extract_str row field_name = extract_field row field_name parse_str

@@ -18,14 +18,14 @@ let create_joined_record (order : Records.order) (item : Records.item) =
     toi_tax = item.toi_tax;
   }
 
-let inner_join (orders : Records.order list) (items : Records.item list) : joined list =
+let inner_join (orders : Records.order list) (items : Records.item list) :
+    joined list =
   let match_and_join (order : Records.order) =
     items
     |> List.filter_map (fun item ->
-         if order.id = item.order_id then
-           Some (create_joined_record order item)
-         else 
-           None)
+           if order.id = item.order_id then
+             Some (create_joined_record order item)
+           else None)
   in
   List.concat_map match_and_join orders
 
