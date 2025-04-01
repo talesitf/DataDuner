@@ -45,12 +45,12 @@ let group_by (key_fn : joined -> int) (records : joined list) : joined list IntM
     IntMap.empty records
 
 let group_by_to_list (key_fn : joined -> int) (records : joined list) :
-    (int * output) list =
+    (int * joined list) list =
   group_by key_fn records |> IntMap.bindings
 
 let calculate_totals (records : joined list) : output =
   List.fold_left
-    (fun acc record ->
+    (fun acc (record:joined) ->
       {
         id = record.id;
         total_amount = acc.total_amount +. record.toi_price;
@@ -66,4 +66,21 @@ let calculate_means (records : joined list) : output =
     total_amount = totals.total_amount /. float_of_int count;
     total_tax = totals.total_tax /. float_of_int count;
   }
+
+let month_year_key (record : joined) : int =
+  let date_str = record.order_date in
+  (* Date format: YYYY-MM-DDThh:mm:ss *)
+  let year = int_of_string (String.sub date_str 0 4) in
+  let month = int_of_string (String.sub date_str 5 2) in
+  (year * 100) + month  (* Creates YYYYMM as integer *)
+
+let group_by_to_outputs (key_fn : joined -> int) (records : joined list) :
+    (int * output) list =
+  group_by_to_list key_fn records
+  |> List.map (fun (key, records) -> (key, calculate_totals records))
+
+let group_by_to_means (key_fn : joined -> int) (records : joined list) :
+    (int * output) list =
+  group_by_to_list key_fn records
+  |> List.map (fun (key, records) -> (key, calculate_means records))
 
