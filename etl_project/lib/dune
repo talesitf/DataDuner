@@ -1,3 +1,5 @@
 (library
  (name etl_project)
- (libraries csv lwt cohttp-lwt-unix cohttp))
+ (libraries csv lwt cohttp-lwt-unix cohttp ppx_rapper_lwt ppx_rapper caqti-driver-sqlite3 caqti-lwt)
+ (preprocess (pps ppx_rapper))
+)

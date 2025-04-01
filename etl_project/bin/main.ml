@@ -70,23 +70,12 @@ let () =
   )
 
 (* let () =
-  let url = "https://raw.githubusercontent.com/talesitf/DataDuner/refs/heads/main/etl_project/data/order.csv" in (* Replace with your CSV URL *)
-  Lwt_main.run (
-    let* parsed_data = Fe.fetch_csv_data url in
-    match parsed_data with
-    | Ok parsed_data ->
-       (* Print the parsed CSV data *)
-       List.iter (
-          fun row ->
-            let id = Ex.extract_int row "id" in
-            match id with
-            | Ok id ->
-                Printf.printf "ID: %d\n" id;
-            | _ -> Printf.printf "ID not found\n"
-       ) parsed_data;
-       Lwt.return ()
-    | Error err ->
-       (* Print the error message *)
-       Printf.eprintf "Failed to fetch or parse CSV data: %s\n" err;
-       Lwt.return ()
-  ) *)
+  match Lwt_main.run @@
+  Caqti_lwt.with_connection
+    (Uri.of_string "sqlite3:essai.sqlite")
+    Sq.execute_queries
+  with
+  | Result.Ok () ->
+    print_string "OK\n"
+  | Result.Error err ->
+    print_string (Caqti_error.show err) *)
