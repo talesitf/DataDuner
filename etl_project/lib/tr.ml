@@ -22,7 +22,7 @@ let inner_join (orders : Records.order list) (items : Records.item list) :
     joined list =
     let match_and_join (order : Records.order) =
       items
-      |> List.filter_map (fun item ->
+      |> List.filter_map (fun (item: Records.item) ->
             if order.id = item.order_id then
               Some (create_joined_record order item)
             else None)
@@ -48,21 +48,21 @@ let group_by_to_list (key_fn : joined -> int) (records : joined list) :
     (int * joined list) list =
   group_by key_fn records |> IntMap.bindings
 
-let calculate_totals (records : joined list) : output =
+let calculate_totals (records : joined list) : order_total =
   List.fold_left
     (fun acc (record:joined) ->
       {
-        id = record.id;
+        order_id = record.id;
         total_amount = acc.total_amount +. record.toi_price;
         total_tax = acc.total_tax +. record.toi_tax;
       })
-    { id = 0; total_amount = 0.0; total_tax = 0.0 } records
+    { order_id = 0; total_amount = 0.0; total_tax = 0.0 } records
 
-let calculate_means (records : joined list) : output =
+let calculate_means (records : joined list) : order_total =
   let totals = calculate_totals records in
   let count = List.length records in
   {
-    id = totals.id;
+    order_id = totals.order_id;
     total_amount = totals.total_amount /. float_of_int count;
     total_tax = totals.total_tax /. float_of_int count;
   }
@@ -74,13 +74,13 @@ let month_year_key (record : joined) : int =
   let month = int_of_string (String.sub date_str 5 2) in
   (year * 100) + month  (* Creates YYYYMM as integer *)
 
-let group_by_to_outputs (key_fn : joined -> int) (records : joined list) :
-    (int * output) list =
+let group_by_to_order_totals (key_fn : joined -> int) (records : joined list) :
+    (int * order_total) list =
   group_by_to_list key_fn records
   |> List.map (fun (key, records) -> (key, calculate_totals records))
 
 let group_by_to_means (key_fn : joined -> int) (records : joined list) :
-    (int * output) list =
+    (int * order_total) list =
   group_by_to_list key_fn records
   |> List.map (fun (key, records) -> (key, calculate_means records))
 

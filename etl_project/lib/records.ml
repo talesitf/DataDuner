@@ -27,3 +27,18 @@ type joined = {
 }
 
 type output = { id : int; total_amount : float; total_tax : float }
+
+(* Database record types *)
+type order_total = {
+  order_id : int;
+  total_amount : float;
+  total_tax : float;
+}
+
+type monthly_mean = {
+  year_month : int;
+  year : int;
+  month : int;
+  avg_amount : float;
+  avg_tax : float;
+}

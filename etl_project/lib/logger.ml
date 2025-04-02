@@ -9,14 +9,14 @@ let log_fetch_result url = function
       log_error (Printf.sprintf "%s: fail" url);
       log_error (Printf.sprintf "Error: %s" str)
 
-let log_order_totals (totals: (int * output) list) =
+let log_order_totals (totals: (int * order_total) list) =
   log_info "\n===== Order Totals =====";
   List.iter (fun (key, j) ->
     log_info (Printf.sprintf "Order ID: %d" key);
     log_info (Printf.sprintf "  Price: %.2f, Tax: %.2f" j.total_amount j.total_tax)
   ) totals
 
-let log_monthly_means (means: (int * output) list) =
+let log_monthly_means (means: (int * order_total) list) =
   log_info "\n===== Monthly Means =====";
   List.iter (fun (key, mean) ->
     let year = key / 100 in

@@ -26,11 +26,33 @@ let parse_csv csv_str =
 let fetch_csv_data url =
   let* result = http_get url in
   match result with
-  | Error str ->
-     Printf.printf "%s: fail\n" url;
-     Printf.printf "Error: %s\n" str;
+  | Error str as err ->
+     Logger.log_fetch_result url err;
      Lwt.return (Error str)
-  | Ok csv_data ->
-     Printf.printf "%s: succeed\n" url;
+  | Ok csv_data as ok ->
+     Logger.log_fetch_result url ok;
      let parsed_data = parse_csv csv_data in
      Lwt.return (Ok parsed_data)
+
+
+let fetch_orders path =
+  let* fetched_data = fetch_csv_data path in
+  match fetched_data with
+  | Error str ->
+      Logger.log_error (Printf.sprintf "Failed to process orders from %s" path);
+      Lwt.return (Error str)
+  | Ok fetched_data ->
+      let result = Ok (fetched_data |> List.map Ex.parse_row_order) in
+      Lwt.return result
+
+
+let fetch_items path =
+  let* fetched_data = fetch_csv_data path in
+  match fetched_data with
+  | Error str ->
+      Logger.log_error (Printf.sprintf "Failed to process items from %s" path);
+      Lwt.return (Error str)
+  | Ok fetched_data ->
+      let result = Ok (fetched_data |> List.map Ex.parse_row_item) in
+      Lwt.return result
+
