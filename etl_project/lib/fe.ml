@@ -1,5 +1,11 @@
+(** {1 Frontend Module}
+    This module handles data fetching and external API interactions. *)
+
 let ( let* ) = Lwt.bind
 
+(** Fetch data from a URL using HTTP GET
+    @param url URL to fetch from
+    @return Result containing the response body or error message *)
 let http_get url =
   let* (resp, body) =
     Cohttp_lwt_unix.Client.get (Uri.of_string url)
@@ -16,13 +22,17 @@ let http_get url =
       Cohttp.Code.reason_phrase_of_code code
     ))
 
-(* Function to parse CSV data using the Csv library *)
+(** Parse CSV string to list of rows
+    @param csv_str CSV string to parse
+    @return List of CSV rows *)
 let parse_csv csv_str =
   csv_str
   |> Csv.of_string ~has_header:true
   |> Csv.Rows.input_all
 
-(* Function to fetch and parse CSV data *)
+(** Fetch and parse CSV data from a URL
+    @param url URL to fetch from
+    @return Result containing parsed CSV data or error message *)
 let fetch_csv_data url =
   let* result = http_get url in
   match result with
@@ -34,7 +44,9 @@ let fetch_csv_data url =
      let parsed_data = parse_csv csv_data in
      Lwt.return (Ok parsed_data)
 
-
+(** Fetch and parse orders from a URL
+    @param path URL to fetch from
+    @return Result containing list of orders or error message *)
 let fetch_orders path =
   let* fetched_data = fetch_csv_data path in
   match fetched_data with
@@ -45,7 +57,9 @@ let fetch_orders path =
       let result = Ok (fetched_data |> List.map Ex.parse_row_order) in
       Lwt.return result
 
-
+(** Fetch and parse items from a URL
+    @param path URL to fetch from
+    @return Result containing list of items or error message *)
 let fetch_items path =
   let* fetched_data = fetch_csv_data path in
   match fetched_data with

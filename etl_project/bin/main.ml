@@ -1,3 +1,6 @@
+(** {1 Main Module}
+    The main entry point for the ETL application. *)
+
 open Etl_project
 open Records
 
@@ -7,11 +10,15 @@ let ( let*? ) = Lwt_result.bind
 (* Group by function using Map *)
 module IntMap = Map.Make (Int)
 
+(** URL for order data *)
 let order_path = "https://raw.githubusercontent.com/talesitf/DataDuner/refs/heads/main/etl_project/data/order.csv"
+
+(** URL for item data *)
 let item_path = "https://raw.githubusercontent.com/talesitf/DataDuner/refs/heads/main/etl_project/data/order_item.csv"
 
-
-(* Helper function to extract Ok values from a list of Results *)
+(** Extract Ok values from a list of Results, discarding Error values
+    @param results List of Result values
+    @return List of unwrapped Ok values *)
 let extract_ok_values results =
   List.fold_left
     (fun acc result ->
@@ -19,7 +26,9 @@ let extract_ok_values results =
     [] results
   |> List.rev
 
-(* Pure function to prepare order totals records *)
+(** Prepare order totals records from grouped data
+    @param grouped_by_order_id List of (order_id, output) pairs
+    @return List of order_total records *)
 let prepare_order_totals grouped_by_order_id =
   List.map (fun (key, output) -> 
     {Records.order_id = key; 
@@ -27,7 +36,9 @@ let prepare_order_totals grouped_by_order_id =
      total_tax = output.total_tax}) 
   grouped_by_order_id
 
-(* Pure function to prepare monthly means records *)
+(** Prepare monthly means records from grouped data
+    @param monthly_means List of (year_month, output) pairs
+    @return List of monthly_mean records *)
 let prepare_monthly_means monthly_means =
   List.map (fun (key, mean) -> 
     let year = key / 100 in
@@ -39,7 +50,12 @@ let prepare_monthly_means monthly_means =
      avg_tax = mean.total_tax}) 
   monthly_means
 
-
+(** Process data through the ETL pipeline
+    @param orders List of orders
+    @param items List of items
+    @param status Status to filter by
+    @param origin Origin to filter by
+    @return Tuple of (grouped_by_order_id, monthly_means) *)
 let process_data orders items status origin =
   let filtered_orders = Tr.filter_by_status orders status origin in
   let joined = Tr.inner_join filtered_orders items in
@@ -47,6 +63,7 @@ let process_data orders items status origin =
   let monthly_means = Tr.group_by_to_means Tr.month_year_key joined in
   (grouped_by_order_id, monthly_means)
 
+(** Main entry point *)
 let () =
   Lwt_main.run (
     let* orders_result = Fe.fetch_orders order_path in

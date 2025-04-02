@@ -126,3 +126,4 @@ The data flow in the project is as follows:
 - Inner join implementation
 - Monthly aggregation capability
 - Logging system
+- Comprehensive code documentation
