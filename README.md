@@ -127,3 +127,7 @@ The data flow in the project is as follows:
 - Monthly aggregation capability
 - Logging system
 - Comprehensive code documentation
+
+
+
+Detailed repost in [Relatório](documents/Relarório%20Dataduner.pdf)
